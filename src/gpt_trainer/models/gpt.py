@@ -161,6 +161,11 @@ class GPT(nn.Module):
         return idx
 
 
+model = GPT(GPTConfig(vocab_size=65, block_size=256))
+model.to('cuda' if torch.cuda.is_available() else 'cpu')
+print(sum(p.numel() for p in model.parameters())/1e6, 'M parameters')
+
+
 
 
 

@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import pickle
 
-from models.gpt import GPT, GPTConfig
+from gpt_trainer.models.gpt import GPT, GPTConfig
 
 # -------------------
 # Load dataset
