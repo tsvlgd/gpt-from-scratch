@@ -250,7 +250,6 @@ It prioritizes architectural understanding over production optimization.
 ## References
 
 * Vaswani et al., *Attention Is All You Need* (2017)
-* Radford et al., *Improving Language Understanding by Generative Pre-Training*
 * Karpathy, nanoGPT
 * Karpathy, Neural Networks: Zero to Hero
 * PyTorch Documentation
