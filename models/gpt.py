@@ -6,7 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class GPTConfig:
     vocab_size: int
-    block_size: int
+    block_size: int = 256
     n_layer: int = 6
     n_head: int = 6
     n_embd: int = 384
@@ -19,9 +19,9 @@ class Head(nn.Module):
         super().__init__()
         assert config.n_embd % config.n_head == 0, "Embedding dimension must be divisible by number of heads."
         self.head_size = config.n_embd // config.n_head
-        self.key = nn.Linear(config.n_embd, config.head_size, bias=config.bias)
-        self.query = nn.Linear(config.n_embd, config.head_size, bias=config.bias)
-        self.value = nn.Linear(config.n_embd, config.head_size, bias=config.bias)
+        self.key = nn.Linear(config.n_embd, self.head_size, bias=config.bias)
+        self.query = nn.Linear(config.n_embd, self.head_size, bias=config.bias)
+        self.value = nn.Linear(config.n_embd, self.head_size, bias=config.bias)
         self.dropout = nn.Dropout(config.dropout)
         self.register_buffer('tril', torch.tril(torch.ones(config.block_size, config.block_size)))
 
