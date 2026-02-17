@@ -5,15 +5,13 @@ from dataclasses import dataclass
 
 @dataclass
 class GPTConfig:
-    vocab_size: int 
-    batch_size: int = 64
-    block_size: int = 256
+    vocab_size: int
+    block_size: int
     n_layer: int = 6
-    n_head: int = 6 
+    n_head: int = 6
     n_embd: int = 384
     dropout: float = 0.2
     bias: bool = True
-
 
 class Head(nn.Module):
     """" One head of self-attention """
