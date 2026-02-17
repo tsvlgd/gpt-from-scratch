@@ -13,11 +13,6 @@ class GPTConfig:
     n_embd: int = 384
     dropout: float = 0.2
     bias: bool = True
-    max_iters: int = 5000
-    eval_interval: int = 500
-    learning_rate: float = 3e-4
-    device: str = 'cuda' if torch.cuda.is_available() else 'cpu'
-    eval_iters: int= 200
 
 
 class Head(nn.Module):
@@ -26,9 +21,10 @@ class Head(nn.Module):
         super().__init__()
         assert config.n_embd % config.n_head == 0, "Embedding dimension must be divisible by number of heads."
         self.head_size = config.n_embd // config.n_head
-        self.key = nn.Linear(config.n_embd, config.n_embd, bias=config.bias)
-        self.query = nn.Linear(config.n_embd, config.n_embd, bias=config.bias)
-        self.value = nn.Linear(config.n_embd, config.n_embd, bias=config.bias)
+        self.key = nn.Linear(config.n_embd, config.head_size, bias=config.bias)
+        self.query = nn.Linear(config.n_embd, config.head_size, bias=config.bias)
+        self.value = nn.Linear(config.n_embd, config.head_size, bias=config.bias)
+        self.dropout = nn.Dropout(config.dropout)
         self.register_buffer('tril', torch.tril(torch.ones(config.block_size, config.block_size)))
 
     def forward(self,x):
@@ -36,7 +32,7 @@ class Head(nn.Module):
         k = self.key(x)
         q = self.query(x)
 
-        wei = q @ k.transpose(-2, -1) * C **-0.5
+        wei = q @ k.transpose(-2, -1) * self.head_size **-0.5
         wei = wei.masked_fill(self.tril[:T,:T] == 0, float('-inf'))
         wei = F.softmax(wei, dim=-1)
         wei = self.dropout(wei)
@@ -110,9 +106,9 @@ class GPT(nn.Module):
         # weight tying
         self.transformer.wte.weight = self.lm_head.weight
 
-        self.apply(self.__init_weights)
+        self.apply(self._init_weights)
 
-    def __init_weights(self, module):
+    def _init_weights(self, module):
         if isinstance(module, nn.Linear):
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02) # Linear layers Noraml distribution
             if module.bias is not None:
